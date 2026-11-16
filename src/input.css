@@ -85,18 +85,10 @@
   .feature-item h3 { @apply text-base font-bold; }
   .feature-item p { @apply mt-1 text-sm text-secondary; }
   .section-rule { @apply mt-5 h-0.5 w-10 bg-accent; }
-  .contact-grid { @apply grid gap-12 lg:grid-cols-[0.75fr_1.25fr] lg:gap-16; }
-  .contact-form { @apply border-t border-border pt-10 lg:border-l lg:border-t-0 lg:pl-14 lg:pt-0; }
+  .contact-grid { @apply grid max-w-2xl gap-12; }
   .contact-links { @apply flex flex-col gap-4; }
   .contact-links a { @apply inline-flex items-center gap-4 text-sm font-medium text-primary transition-colors hover:text-accent; }
   .contact-links svg { @apply h-6 w-6 shrink-0 text-accent; }
-  .field-group label { @apply mb-2 block text-sm font-medium text-primary; }
-  .field-group input, .field-group textarea { @apply block w-full rounded-lg border border-border bg-card px-4 py-3 text-sm text-primary outline-none transition-colors placeholder:text-secondary focus:border-accent focus:ring-1 focus:ring-accent; }
-  .field-group textarea { @apply resize-y; }
-  .field-group input[aria-invalid='true'], .field-group textarea[aria-invalid='true'] { @apply border-red-500 focus:border-red-500 focus:ring-red-500; }
-  .field-error { @apply mt-1.5 min-h-4 text-xs text-red-500; }
-  .form-status { @apply mt-3 min-h-5 text-sm text-secondary; }
-  .form-status.is-error { @apply text-red-500; }
   .site-footer { @apply mt-8 border-t border-border bg-surface; }
   .footer-link { @apply text-secondary transition-colors hover:text-accent; }
   .footer-link svg { @apply h-5 w-5; }
