@@ -74,6 +74,142 @@
     document.querySelectorAll('.reveal').forEach((element) => element.classList.add('is-visible'));
   }
 
+  const setupTechnologyShuffle = () => {
+    const grid = document.querySelector('[data-tech-grid]');
+    if (!grid) return;
+
+    const cards = () => [...grid.querySelectorAll('[data-tech-card]')];
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let timerId = null;
+    let sectionIsVisible = false;
+    let isAnimating = false;
+    let step = 0;
+    let hiddenCursor = 0;
+
+    const visibleCount = () => {
+      const count = Number.parseInt(getComputedStyle(grid).getPropertyValue('--tech-visible-count'), 10);
+      return Math.max(1, Math.min(count || cards().length, cards().length));
+    };
+
+    const updateVisibility = () => {
+      const count = visibleCount();
+      cards().forEach((card, index) => {
+        const isOffscreen = index >= count;
+        card.classList.toggle('is-tech-offscreen', isOffscreen);
+        card.setAttribute('aria-hidden', String(isOffscreen));
+      });
+    };
+
+    const swapNodes = (firstNode, secondNode) => {
+      const firstMarker = document.createComment('tech-card-first-position');
+      const secondMarker = document.createComment('tech-card-second-position');
+      grid.replaceChild(firstMarker, firstNode);
+      grid.replaceChild(secondMarker, secondNode);
+      grid.replaceChild(secondNode, firstMarker);
+      grid.replaceChild(firstNode, secondMarker);
+    };
+
+    const finishAnimation = (animatedCards) => {
+      animatedCards.forEach((card) => {
+        card.classList.remove('is-tech-animating');
+        card.style.removeProperty('transform');
+        card.style.removeProperty('transition');
+      });
+      isAnimating = false;
+    };
+
+    const swapCards = () => {
+      if (isAnimating || reducedMotion.matches || document.hidden) return;
+
+      const orderedCards = cards();
+      const count = visibleCount();
+      if (count < 2 || orderedCards.length < 2) return;
+
+      updateVisibility();
+      const firstIndex = step % count;
+      const hasOffscreenCards = orderedCards.length > count;
+      const shouldBringInCard = hasOffscreenCards && step % 3 === 2;
+      const secondIndex = shouldBringInCard
+        ? count + (hiddenCursor % (orderedCards.length - count))
+        : (firstIndex + 1 + (Math.floor(step / count) % (count - 1))) % count;
+      const firstCard = orderedCards[firstIndex];
+      const secondCard = orderedCards[secondIndex];
+      const firstPositions = new Map(orderedCards.map((card) => [card, card.getBoundingClientRect()]));
+
+      isAnimating = true;
+      firstCard.classList.add('is-tech-animating');
+      secondCard.classList.add('is-tech-animating');
+      swapNodes(firstCard, secondCard);
+      updateVisibility();
+
+      const animatedCards = [firstCard, secondCard];
+      const lastPositions = new Map(orderedCards.map((card) => [card, card.getBoundingClientRect()]));
+
+      orderedCards.forEach((card) => {
+        const first = firstPositions.get(card);
+        const last = lastPositions.get(card);
+        const deltaX = first.left - last.left;
+        const deltaY = first.top - last.top;
+        if (deltaX || deltaY) {
+          card.style.transition = 'none';
+          card.style.transform = `translate3d(${deltaX}px, ${deltaY}px, 0)`;
+        }
+      });
+
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          orderedCards.forEach((card) => {
+            const first = firstPositions.get(card);
+            const last = lastPositions.get(card);
+            if (first.left !== last.left || first.top !== last.top) {
+              card.style.transition = 'transform 600ms cubic-bezier(0.22, 1, 0.36, 1)';
+              card.style.transform = 'translate3d(0, 0, 0)';
+            }
+          });
+        });
+      });
+
+      window.setTimeout(() => finishAnimation(animatedCards), 650);
+      if (shouldBringInCard) hiddenCursor += 1;
+      step += 1;
+    };
+
+    const start = () => {
+      if (!sectionIsVisible || timerId || reducedMotion.matches) return;
+      timerId = window.setInterval(swapCards, 2800);
+    };
+
+    const stop = () => {
+      if (timerId) window.clearInterval(timerId);
+      timerId = null;
+    };
+
+    updateVisibility();
+    window.addEventListener('resize', updateVisibility, { passive: true });
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) stop();
+      else start();
+    });
+    reducedMotion.addEventListener?.('change', () => {
+      if (reducedMotion.matches) stop();
+      else start();
+    });
+
+    if ('IntersectionObserver' in window) {
+      const technologyObserver = new IntersectionObserver(([entry]) => {
+        sectionIsVisible = entry.isIntersecting;
+        if (sectionIsVisible) start();
+        else stop();
+      }, { threshold: 0.2 });
+      technologyObserver.observe(grid.closest('section') || grid);
+    } else {
+      sectionIsVisible = true;
+      start();
+    }
+  };
+
+  setupTechnologyShuffle();
+
   document.querySelector('[data-current-year]')?.replaceChildren(String(new Date().getFullYear()));
 
   const form = document.querySelector('[data-contact-form]');
