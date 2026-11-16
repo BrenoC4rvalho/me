@@ -132,79 +132,7 @@
             </div>
           </div>
 
-          <div class="projects-grid mt-8">
-            <article class="project-card reveal">
-              <div class="project-icon" aria-hidden="true">
-                <i data-lucide="beef"></i>
-              </div>
-              <h3 class="mt-5 text-lg font-bold">InteliPec</h3>
-              <p class="project-category">Antharys Tecnologia</p>
-              <p class="mt-2 text-sm leading-6 text-secondary">Sistema de gestão pecuária para centralizar informações do rebanho, acompanhar indicadores e apoiar a tomada de decisões na operação.</p>
-              <div class="project-stack" aria-label="Tecnologias utilizadas">
-                <span>Angular</span><span>Java</span><span>Spring Boot</span><span>PostgreSQL</span>
-              </div>
-            </article>
-
-            <article class="project-card reveal reveal-delay-1">
-              <div class="project-icon" aria-hidden="true">
-                <i data-lucide="receipt-text"></i>
-              </div>
-              <h3 class="mt-5 text-lg font-bold">Módulo Emissor de NFS-e</h3>
-              <p class="project-category">Antharys Tecnologia</p>
-              <p class="mt-2 text-sm leading-6 text-secondary">Módulo para emissão e gerenciamento de notas fiscais de serviço eletrônicas, integrado ao fluxo operacional do sistema empresarial.</p>
-              <div class="project-stack" aria-label="Tecnologias utilizadas">
-                <span>Angular</span><span>Java</span><span>Spring Boot</span><span>SQL</span>
-              </div>
-            </article>
-
-            <article class="project-card reveal reveal-delay-2">
-              <div class="project-icon" aria-hidden="true">
-                <i data-lucide="calculator"></i>
-              </div>
-              <h3 class="mt-5 text-lg font-bold">Módulo de Orçamento</h3>
-              <p class="project-category">Antharys Tecnologia</p>
-              <p class="mt-2 text-sm leading-6 text-secondary">Módulo para elaboração, acompanhamento e controle de orçamentos, apoiando a organização comercial e financeira das empresas.</p>
-              <div class="project-stack" aria-label="Tecnologias utilizadas">
-                <span>Angular</span><span>Java</span><span>Spring Boot</span><span>SQL</span>
-              </div>
-            </article>
-
-            <article class="project-card reveal">
-              <div class="project-icon" aria-hidden="true">
-                <i data-lucide="hard-hat"></i>
-              </div>
-              <h3 class="mt-5 text-lg font-bold">ERP para Mineradora</h3>
-              <p class="project-category">Antharys Tecnologia</p>
-              <p class="mt-2 text-sm leading-6 text-secondary">Sistema integrado de gestão empresarial para uma mineradora, reunindo processos operacionais, administrativos e financeiros em uma única solução.</p>
-              <div class="project-stack" aria-label="Tecnologias utilizadas">
-                <span>Angular</span><span>Java</span><span>Spring Boot</span><span>SQL</span>
-              </div>
-            </article>
-
-            <article class="project-card reveal reveal-delay-1">
-              <div class="project-icon" aria-hidden="true">
-                <i data-lucide="sprout"></i>
-              </div>
-              <h3 class="mt-5 text-lg font-bold">Gestão Direta</h3>
-              <p class="project-category">Projeto acadêmico / TCC</p>
-              <p class="mt-2 text-sm leading-6 text-secondary">Plataforma de gestão financeira para pequenos produtores rurais, com controle de receitas, despesas, safras, fluxo de caixa, relatórios e integração com inteligência artificial e Telegram.</p>
-              <div class="project-stack" aria-label="Tecnologias utilizadas">
-                <span>Angular</span><span>Java</span><span>Spring Boot</span><span>PostgreSQL</span>
-              </div>
-            </article>
-
-            <article class="project-card reveal reveal-delay-2">
-              <div class="project-icon" aria-hidden="true">
-                <i data-lucide="clipboard-check"></i>
-              </div>
-              <h3 class="mt-5 text-lg font-bold">Sistema de Notificações</h3>
-              <p class="project-category">Hackathon</p>
-              <p class="mt-2 text-sm leading-6 text-secondary">API RESTful para envio automatizado de notificações pelo WhatsApp, utilizando Spring Security e integração com Twilio.</p>
-              <div class="project-stack" aria-label="Tecnologias utilizadas">
-                <span>Java</span><span>Spring Boot</span><span>Spring Security</span><span>Twilio</span>
-              </div>
-            </article>
-          </div>
+          <div class="projects-grid mt-8" data-project-grid aria-label="Projetos do portfólio"></div>
         </div>
       </section>
 
@@ -244,6 +172,43 @@
         </div>
       </section>
     </main>
+
+    <dialog class="project-dialog" data-project-dialog aria-labelledby="project-dialog-title" aria-describedby="project-dialog-description">
+      <div class="project-dialog-surface">
+        <header class="project-dialog-header">
+          <div class="project-dialog-heading">
+            <span class="project-dialog-icon" data-project-dialog-icon aria-hidden="true"></span>
+            <div>
+              <p class="project-category" data-project-dialog-category></p>
+              <h2 id="project-dialog-title" class="text-2xl font-bold" data-project-dialog-title></h2>
+            </div>
+          </div>
+          <button class="project-dialog-close" type="button" data-project-dialog-close aria-label="Fechar detalhes do projeto">
+            <i data-lucide="x" aria-hidden="true"></i>
+          </button>
+        </header>
+
+        <div class="project-dialog-body">
+          <p class="text-sm leading-7 text-secondary" data-project-dialog-description></p>
+
+          <section class="project-dialog-section" aria-labelledby="project-features-title">
+            <h3 id="project-features-title" class="text-base font-bold">Funcionalidades desenvolvidas</h3>
+            <ul class="project-feature-list" data-project-dialog-features></ul>
+          </section>
+
+          <section class="project-dialog-section" aria-labelledby="project-technologies-title">
+            <h3 id="project-technologies-title" class="text-base font-bold">Tecnologias utilizadas</h3>
+            <div class="project-dialog-tech-grid" data-project-dialog-technologies></div>
+          </section>
+
+          <div class="project-dialog-links" data-project-dialog-links hidden></div>
+        </div>
+
+        <footer class="project-dialog-footer">
+          <button class="button button-secondary" type="button" data-project-dialog-close>Fechar</button>
+        </footer>
+      </div>
+    </dialog>
 
     <footer class="site-footer">
       <div class="container flex items-center justify-center gap-4 py-5">

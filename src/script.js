@@ -21,6 +21,345 @@
   setTheme(root.dataset.theme || (root.classList.contains('dark') ? 'dark' : 'light'), false);
   window.lucide?.createIcons();
 
+  const projects = [
+    {
+      id: 'intelippec',
+      title: 'InteliPec',
+      category: 'Antharys Tecnologia',
+      icon: 'beef',
+      description: 'Sistema de gestão pecuária para centralizar informações do rebanho, acompanhar indicadores e apoiar a tomada de decisões na operação.',
+      features: [
+        'Refatoração da arquitetura multi-tenant.',
+        'Automatização da troca de schemas.',
+        'CRUD de animais, lotes e documentos.',
+        'Upload de arquivos.',
+        'Cálculo automático da composição racial dos animais.'
+      ],
+      technologies: [
+        { name: 'Java 17', icon: './assets/icons/java.svg' },
+        { name: 'Spring Boot 3', icon: './assets/icons/springboot.svg' },
+        { name: 'Angular 19', icon: './assets/icons/angular.svg' },
+        { name: 'Tailwind CSS', icon: './assets/icons/tailwindcss.svg' }
+      ],
+      githubUrl: null,
+      demoUrl: null
+    },
+    {
+      id: 'nfse',
+      title: 'Módulo Emissor de NFS-e',
+      category: 'Antharys Tecnologia',
+      icon: 'receipt-text',
+      description: 'Módulo para emissão e gerenciamento de notas fiscais de serviço eletrônicas, integrado ao fluxo operacional do sistema empresarial.',
+      features: [
+        'Emissão e cancelamento de NFS-e.',
+        'Processamento médio de 1.500 notas por dia.',
+        'Integração com eNotas.',
+        'Envio em lote e processamento em filas.',
+        'Webhooks, auditoria, logs e filtros.'
+      ],
+      technologies: [
+        { name: 'Java 17', icon: './assets/icons/java.svg' },
+        { name: 'Spring Boot 3', icon: './assets/icons/springboot.svg' },
+        { name: 'Angular 19', icon: './assets/icons/angular.svg' },
+        { name: 'Bootstrap 5', icon: null }
+      ],
+      githubUrl: null,
+      demoUrl: null
+    },
+    {
+      id: 'orcamento',
+      title: 'Módulo de Orçamento',
+      category: 'Antharys Tecnologia',
+      icon: 'calculator',
+      description: 'Módulo para elaboração, acompanhamento e controle de orçamentos, apoiando a organização comercial e financeira das empresas.',
+      features: [
+        'Substituição de 10 planilhas Excel por duas telas.',
+        'API REST para gestão de orçamentos.',
+        'Relacionamentos Many-to-Many.',
+        'Cadastro, edição e geração de PDFs.'
+      ],
+      technologies: [
+        { name: 'Java 8', icon: './assets/icons/java.svg' },
+        { name: 'Spring Boot 1', icon: './assets/icons/springboot.svg' },
+        { name: 'AngularJS', icon: './assets/icons/angular.svg' }
+      ],
+      githubUrl: null,
+      demoUrl: null
+    },
+    {
+      id: 'erp-mineradora',
+      title: 'ERP para Mineradora',
+      category: 'Antharys Tecnologia',
+      icon: 'hard-hat',
+      description: 'Sistema integrado de gestão empresarial para uma mineradora, reunindo processos operacionais, administrativos e financeiros em uma única solução.',
+      features: [
+        'Gestão financeira e vendas.',
+        'Cadastro de múltiplos caixas.',
+        'Filtros de receitas e despesas por caixa.',
+        'Dashboards com segmentação de produtos.',
+        'Relatórios de retiradas.',
+        'Controle de pagamentos parciais e totais em vendas a prazo.'
+      ],
+      technologies: [
+        { name: 'Java 17', icon: './assets/icons/java.svg' },
+        { name: 'Spring Boot 3', icon: './assets/icons/springboot.svg' },
+        { name: 'Angular 19', icon: './assets/icons/angular.svg' }
+      ],
+      githubUrl: null,
+      demoUrl: null
+    },
+    {
+      id: 'gestao-direta',
+      title: 'Gestão Direta',
+      category: 'TCC',
+      icon: 'sprout',
+      description: 'Plataforma de gestão financeira para pequenos produtores rurais, com controle de receitas, despesas, safras, fluxo de caixa, relatórios e integração com inteligência artificial e Telegram.',
+      features: [
+        'Gestão de receitas, despesas e safras.',
+        'Fluxo de caixa e relatórios.',
+        'Integração com Telegram e inteligência artificial.',
+        'Conversão de textos e áudios em transações financeiras, com 95% de eficácia e confirmação do usuário.'
+      ],
+      technologies: [
+        { name: 'Angular', icon: './assets/icons/angular.svg' },
+        { name: 'Java', icon: './assets/icons/java.svg' },
+        { name: 'Spring Boot', icon: './assets/icons/springboot.svg' }
+      ],
+      githubUrl: null,
+      demoUrl: null
+    },
+    {
+      id: 'notificacoes',
+      title: 'Sistema de Notificações',
+      category: 'Hackathon',
+      icon: 'clipboard-check',
+      description: 'API RESTful para envio automatizado de notificações pelo WhatsApp, utilizando Spring Security e integração com Twilio.',
+      features: [
+        'Desenvolvimento de API RESTful.',
+        'Segurança com Spring Security.',
+        'Integração com WhatsApp via Twilio.',
+        'Envio automatizado de alertas.'
+      ],
+      technologies: [
+        { name: 'Java', icon: './assets/icons/java.svg' },
+        { name: 'Spring Boot', icon: './assets/icons/springboot.svg' },
+        { name: 'Spring Security', icon: null },
+        { name: 'Twilio', icon: null }
+      ],
+      githubUrl: null,
+      demoUrl: null
+    }
+  ];
+
+  const createLucideIcon = (name) => {
+    const icon = document.createElement('i');
+    icon.dataset.lucide = name;
+    icon.setAttribute('aria-hidden', 'true');
+    return icon;
+  };
+
+  const createTechnologyElement = (technology, className = 'project-dialog-tech') => {
+    const element = document.createElement('div');
+    element.className = className;
+    if (technology.icon) {
+      const image = document.createElement('img');
+      image.src = technology.icon;
+      image.alt = '';
+      image.width = 28;
+      image.height = 28;
+      element.append(image);
+    } else {
+      const fallback = document.createElement('span');
+      fallback.className = 'project-dialog-tech-fallback';
+      fallback.textContent = technology.name.slice(0, 2).toUpperCase();
+      fallback.setAttribute('aria-hidden', 'true');
+      element.append(fallback);
+    }
+    const name = document.createElement('span');
+    name.textContent = technology.name;
+    element.append(name);
+    return element;
+  };
+
+  const renderProjectCards = () => {
+    const grid = document.querySelector('[data-project-grid]');
+    if (!grid) return;
+
+    const fragment = document.createDocumentFragment();
+    projects.forEach((project, index) => {
+      const card = document.createElement('article');
+      card.className = `project-card reveal${index % 3 ? ` reveal-delay-${index % 3}` : ''}`;
+      card.dataset.projectId = project.id;
+      card.tabIndex = 0;
+      card.setAttribute('role', 'button');
+      card.setAttribute('aria-haspopup', 'dialog');
+      card.setAttribute('aria-label', `Ver detalhes do projeto ${project.title}`);
+
+      const icon = document.createElement('div');
+      icon.className = 'project-icon';
+      icon.setAttribute('aria-hidden', 'true');
+      icon.append(createLucideIcon(project.icon));
+
+      const title = document.createElement('h3');
+      title.className = 'mt-5 text-lg font-bold';
+      title.textContent = project.title;
+
+      const category = document.createElement('p');
+      category.className = 'project-category';
+      category.textContent = project.category;
+
+      const description = document.createElement('p');
+      description.className = 'mt-2 text-sm leading-6 text-secondary';
+      description.textContent = project.description;
+
+      const stack = document.createElement('div');
+      stack.className = 'project-stack';
+      stack.setAttribute('aria-label', 'Tecnologias utilizadas');
+      project.technologies.forEach((technology) => {
+        const technologyName = document.createElement('span');
+        technologyName.textContent = technology.name;
+        stack.append(technologyName);
+      });
+
+      card.append(icon, title, category, description, stack);
+      fragment.append(card);
+    });
+    grid.replaceChildren(fragment);
+    window.lucide?.createIcons();
+  };
+
+  const setupProjectDetails = () => {
+    const grid = document.querySelector('[data-project-grid]');
+    const dialog = document.querySelector('[data-project-dialog]');
+    if (!grid || !dialog) return;
+
+    const dialogIcon = dialog.querySelector('[data-project-dialog-icon]');
+    const dialogTitle = dialog.querySelector('[data-project-dialog-title]');
+    const dialogCategory = dialog.querySelector('[data-project-dialog-category]');
+    const dialogDescription = dialog.querySelector('[data-project-dialog-description]');
+    const dialogFeatures = dialog.querySelector('[data-project-dialog-features]');
+    const dialogTechnologies = dialog.querySelector('[data-project-dialog-technologies]');
+    const dialogLinks = dialog.querySelector('[data-project-dialog-links]');
+    const closeButtons = [...dialog.querySelectorAll('[data-project-dialog-close]')];
+    const focusableSelector = 'button, a[href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+    let activeCard = null;
+    let closeTimer = null;
+    let isClosing = false;
+
+    const clearDialogState = () => {
+      document.body.classList.remove('modal-open');
+      dialog.classList.remove('is-visible', 'is-closing', 'is-open');
+      isClosing = false;
+      if (activeCard) activeCard.focus();
+      activeCard = null;
+    };
+
+    const closeDialog = () => {
+      if (!activeCard || isClosing) return;
+      isClosing = true;
+      dialog.classList.remove('is-visible');
+      dialog.classList.add('is-closing');
+      closeTimer = window.setTimeout(() => {
+        if (dialog.open && typeof dialog.close === 'function') dialog.close();
+        else {
+          dialog.removeAttribute('open');
+          clearDialogState();
+        }
+      }, 180);
+    };
+
+    const openDialog = (card) => {
+      const project = projects.find((item) => item.id === card.dataset.projectId);
+      if (!project) return;
+      if (closeTimer) window.clearTimeout(closeTimer);
+      activeCard = card;
+      dialogIcon.replaceChildren(createLucideIcon(project.icon));
+      dialogTitle.textContent = project.title;
+      dialogCategory.textContent = project.category;
+      dialogDescription.textContent = project.description;
+      dialogFeatures.replaceChildren(...project.features.map((feature) => {
+        const item = document.createElement('li');
+        item.textContent = feature;
+        return item;
+      }));
+      dialogTechnologies.replaceChildren(...project.technologies.map((technology) => createTechnologyElement(technology)));
+      dialogLinks.replaceChildren();
+
+      const links = [
+        { url: project.githubUrl, label: 'GitHub', icon: 'github' },
+        { url: project.demoUrl, label: 'Demonstração', icon: 'external-link' }
+      ].filter((link) => link.url);
+      links.forEach((link) => {
+        const anchor = document.createElement('a');
+        anchor.href = link.url;
+        anchor.target = '_blank';
+        anchor.rel = 'noreferrer';
+        anchor.append(createLucideIcon(link.icon));
+        const label = document.createElement('span');
+        label.textContent = link.label;
+        anchor.append(label);
+        dialogLinks.append(anchor);
+      });
+      dialogLinks.hidden = links.length === 0;
+
+      document.body.classList.add('modal-open');
+      dialog.classList.remove('is-closing');
+      if (typeof dialog.showModal === 'function') dialog.showModal();
+      else {
+        dialog.setAttribute('open', '');
+        dialog.classList.add('is-open');
+      }
+      window.lucide?.createIcons();
+      window.requestAnimationFrame(() => {
+        dialog.classList.add('is-visible');
+        closeButtons[0]?.focus();
+      });
+    };
+
+    renderProjectCards();
+    grid.addEventListener('click', (event) => {
+      const card = event.target.closest('[data-project-id]');
+      if (card) openDialog(card);
+    });
+    grid.addEventListener('keydown', (event) => {
+      if (event.key !== 'Enter' && event.key !== ' ') return;
+      const card = event.target.closest('[data-project-id]');
+      if (!card) return;
+      event.preventDefault();
+      openDialog(card);
+    });
+    closeButtons.forEach((button) => button.addEventListener('click', closeDialog));
+    dialog.addEventListener('click', (event) => {
+      if (event.target === dialog) closeDialog();
+    });
+    dialog.addEventListener('cancel', (event) => {
+      event.preventDefault();
+      closeDialog();
+    });
+    dialog.addEventListener('close', clearDialogState);
+    dialog.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        closeDialog();
+        return;
+      }
+      if (event.key !== 'Tab') return;
+      const focusableElements = [...dialog.querySelectorAll(focusableSelector)].filter((element) => !element.hasAttribute('disabled') && element.offsetParent !== null);
+      if (!focusableElements.length) return;
+      const first = focusableElements[0];
+      const last = focusableElements[focusableElements.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    });
+  };
+
+  setupProjectDetails();
+
   themeToggle?.addEventListener('click', () => {
     setTheme(root.classList.contains('dark') ? 'light' : 'dark');
   });
