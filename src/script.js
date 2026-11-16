@@ -418,133 +418,199 @@
     const grid = document.querySelector('[data-tech-grid]');
     if (!grid) return;
 
-    const cards = () => [...grid.querySelectorAll('[data-tech-card]')];
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const initialCards = [...grid.querySelectorAll('[data-tech-card]')];
+    const records = initialCards.map((element) => ({ template: element.cloneNode(true) }));
+    let activeRecords = [];
+    let activeCards = [];
+    let queuedRecords = [];
     let timerId = null;
     let sectionIsVisible = false;
     let isAnimating = false;
-    let step = 0;
-    let hiddenCursor = 0;
+    let activeAnimations = [];
+    let nextDirection = -1;
 
     const visibleCount = () => {
       const count = Number.parseInt(getComputedStyle(grid).getPropertyValue('--tech-visible-count'), 10);
-      return Math.max(1, Math.min(count || cards().length, cards().length));
+      return Math.max(1, Math.min(count || records.length, records.length));
     };
 
-    const updateVisibility = () => {
+    const cleanCard = (card) => {
+      card.classList.remove('reveal', 'reveal-delay-1', 'reveal-delay-2', 'is-visible', 'is-tech-incoming', 'is-tech-impact', 'is-tech-exiting');
+      card.removeAttribute('style');
+      card.setAttribute('aria-hidden', 'false');
+      return card;
+    };
+
+    const cardFromRecord = (record) => cleanCard(record.template.cloneNode(true));
+
+    const syncSlotCount = () => {
+      if (isAnimating) return;
       const count = visibleCount();
-      cards().forEach((card, index) => {
-        const isOffscreen = index >= count;
-        card.classList.toggle('is-tech-offscreen', isOffscreen);
-        card.setAttribute('aria-hidden', String(isOffscreen));
-      });
+      while (activeRecords.length < count && queuedRecords.length) {
+        const record = queuedRecords.shift();
+        activeRecords.push(record);
+        activeCards.push(cardFromRecord(record));
+      }
+      while (activeRecords.length > count) {
+        queuedRecords.unshift(activeRecords.pop());
+        activeCards.pop();
+      }
+      grid.replaceChildren(...activeCards);
+      activeCards.forEach((card) => card.setAttribute('aria-hidden', 'false'));
     };
 
-    const swapNodes = (firstNode, secondNode) => {
-      const firstMarker = document.createComment('tech-card-first-position');
-      const secondMarker = document.createComment('tech-card-second-position');
-      grid.replaceChild(firstMarker, firstNode);
-      grid.replaceChild(secondMarker, secondNode);
-      grid.replaceChild(secondNode, firstMarker);
-      grid.replaceChild(firstNode, secondMarker);
-    };
-
-    const finishAnimation = (animatedCards) => {
-      animatedCards.forEach((card) => {
-        card.classList.remove('is-tech-animating');
-        card.style.removeProperty('transform');
-        card.style.removeProperty('transition');
-      });
-      isAnimating = false;
-    };
-
-    const swapCards = () => {
-      if (isAnimating || reducedMotion.matches || document.hidden) return;
-
-      const orderedCards = cards();
-      const count = visibleCount();
-      if (count < 2 || orderedCards.length < 2) return;
-
-      updateVisibility();
-      const firstIndex = step % count;
-      const hasOffscreenCards = orderedCards.length > count;
-      const shouldBringInCard = hasOffscreenCards && step % 3 === 2;
-      const secondIndex = shouldBringInCard
-        ? count + (hiddenCursor % (orderedCards.length - count))
-        : (firstIndex + 1 + (Math.floor(step / count) % (count - 1))) % count;
-      const firstCard = orderedCards[firstIndex];
-      const secondCard = orderedCards[secondIndex];
-      const firstPositions = new Map(orderedCards.map((card) => [card, card.getBoundingClientRect()]));
-
-      isAnimating = true;
-      firstCard.classList.add('is-tech-animating');
-      secondCard.classList.add('is-tech-animating');
-      swapNodes(firstCard, secondCard);
-      updateVisibility();
-
-      const animatedCards = [firstCard, secondCard];
-      const lastPositions = new Map(orderedCards.map((card) => [card, card.getBoundingClientRect()]));
-
-      orderedCards.forEach((card) => {
-        const first = firstPositions.get(card);
-        const last = lastPositions.get(card);
-        const deltaX = first.left - last.left;
-        const deltaY = first.top - last.top;
-        if (deltaX || deltaY) {
-          card.style.transition = 'none';
-          card.style.transform = `translate3d(${deltaX}px, ${deltaY}px, 0)`;
-        }
-      });
-
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          orderedCards.forEach((card) => {
-            const first = firstPositions.get(card);
-            const last = lastPositions.get(card);
-            if (first.left !== last.left || first.top !== last.top) {
-              card.style.transition = 'transform 600ms cubic-bezier(0.22, 1, 0.36, 1)';
-              card.style.transform = 'translate3d(0, 0, 0)';
-            }
-          });
-        });
-      });
-
-      window.setTimeout(() => finishAnimation(animatedCards), 650);
-      if (shouldBringInCard) hiddenCursor += 1;
-      step += 1;
-    };
-
-    const start = () => {
-      if (!sectionIsVisible || timerId || reducedMotion.matches) return;
-      timerId = window.setInterval(swapCards, 2800);
-    };
-
-    const stop = () => {
-      if (timerId) window.clearInterval(timerId);
+    const clearTimer = () => {
+      if (timerId) window.clearTimeout(timerId);
       timerId = null;
     };
 
-    updateVisibility();
-    window.addEventListener('resize', updateVisibility, { passive: true });
+    const pauseAnimations = () => {
+      activeAnimations.forEach((animation) => {
+        if (animation.playState === 'running') animation.pause();
+      });
+    };
+
+    const resumeAnimations = () => {
+      activeAnimations.forEach((animation) => {
+        if (animation.playState === 'paused') animation.play();
+      });
+    };
+
+    const scheduleNext = () => {
+      clearTimer();
+      if (!sectionIsVisible || document.hidden || isAnimating) return;
+      const delay = 2500 + Math.random() * 1500;
+      timerId = window.setTimeout(() => {
+        timerId = null;
+        swapCards();
+      }, delay);
+    };
+
+    const replaceWithoutAnimation = () => {
+      if (activeCards.length < 1 || queuedRecords.length < 1) return;
+      const targetIndex = Math.floor(Math.random() * activeCards.length);
+      const oldRecord = activeRecords[targetIndex];
+      const incomingRecord = queuedRecords.shift();
+      const incomingCard = cardFromRecord(incomingRecord);
+      queuedRecords.push(oldRecord);
+      activeRecords[targetIndex] = incomingRecord;
+      activeCards[targetIndex].replaceWith(incomingCard);
+      activeCards[targetIndex] = incomingCard;
+    };
+
+    const swapCards = async () => {
+      if (isAnimating || document.hidden || !sectionIsVisible) return;
+      syncSlotCount();
+      if (activeCards.length < 1 || queuedRecords.length < 1) {
+        scheduleNext();
+        return;
+      }
+      if (reducedMotion.matches) {
+        replaceWithoutAnimation();
+        scheduleNext();
+        return;
+      }
+
+      const targetIndex = Math.floor(Math.random() * activeCards.length);
+      const oldCard = activeCards[targetIndex];
+      const oldRecord = activeRecords[targetIndex];
+      const incomingRecord = queuedRecords.shift();
+      const incomingCard = cardFromRecord(incomingRecord);
+      const gridRect = grid.getBoundingClientRect();
+      const targetRect = oldCard.getBoundingClientRect();
+      const targetLeft = targetRect.left - gridRect.left;
+      const targetTop = targetRect.top - gridRect.top;
+      const cardHeight = targetRect.height;
+      const entryDirection = nextDirection;
+      nextDirection *= -1;
+      const entryOffset = entryDirection * (cardHeight + 18);
+      const pushDirection = -entryDirection;
+      const impactDistance = Math.min(16, Math.max(8, cardHeight * 0.05));
+      const exitDistance = cardHeight + 24;
+      const totalDuration = 1120;
+      const approachEnd = 450 / totalDuration;
+      const impactMidpoint = 510 / totalDuration;
+      const impactEnd = 570 / totalDuration;
+      const transferEnd = 970 / totalDuration;
+
+      incomingCard.classList.add('is-tech-incoming');
+      incomingCard.style.left = `${targetLeft}px`;
+      incomingCard.style.top = `${targetTop}px`;
+      incomingCard.style.width = `${targetRect.width}px`;
+      incomingCard.style.height = `${targetRect.height}px`;
+      grid.append(incomingCard);
+
+      oldCard.classList.add('is-tech-impact', 'is-tech-exiting');
+      isAnimating = true;
+      const incomingAnimation = incomingCard.animate([
+        { transform: `translate3d(0, ${entryOffset}px, 0) scale(1)`, offset: 0 },
+        { transform: 'translate3d(0, 0, 0) scale(1)', offset: approachEnd, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' },
+        { transform: 'translate3d(0, 0, 0) scale(0.96)', offset: impactMidpoint, easing: 'ease-out' },
+        { transform: 'translate3d(0, 0, 0) scale(1)', offset: impactEnd, easing: 'ease-out' },
+        { transform: 'translate3d(0, 0, 0) scale(1)', offset: 1 }
+      ], { duration: totalDuration, fill: 'forwards', easing: 'linear' });
+      const oldAnimation = oldCard.animate([
+        { transform: 'translate3d(0, 0, 0) scale(1)', opacity: 1, offset: 0 },
+        { transform: 'translate3d(0, 0, 0) scale(1)', opacity: 1, offset: approachEnd },
+        { transform: `translate3d(0, ${pushDirection * impactDistance}px, 0) scale(0.995)`, opacity: 1, offset: impactMidpoint, easing: 'ease-out' },
+        { transform: `translate3d(0, ${pushDirection * impactDistance}px, 0) scale(1)`, opacity: 1, offset: impactEnd },
+        { transform: `translate3d(0, ${pushDirection * exitDistance}px, 0) scale(1)`, opacity: 0, offset: transferEnd, easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)' },
+        { transform: `translate3d(0, ${pushDirection * exitDistance}px, 0) scale(1)`, opacity: 0, offset: 1 }
+      ], { duration: totalDuration, fill: 'forwards', easing: 'linear' });
+      activeAnimations = [incomingAnimation, oldAnimation];
+
+      try {
+        await Promise.all([incomingAnimation.finished, oldAnimation.finished]);
+        queuedRecords.push(oldRecord);
+        activeRecords[targetIndex] = incomingRecord;
+        oldCard.replaceWith(incomingCard);
+        activeCards[targetIndex] = cleanCard(incomingCard);
+      } catch (error) {
+        queuedRecords.unshift(incomingRecord);
+        if (incomingCard.isConnected) incomingCard.remove();
+      } finally {
+        oldCard.classList.remove('is-tech-impact', 'is-tech-exiting');
+        activeAnimations = [];
+        isAnimating = false;
+        scheduleNext();
+      }
+    };
+
+    activeRecords = records.slice(0, visibleCount());
+    activeCards = initialCards.slice(0, activeRecords.length);
+    queuedRecords = records.slice(activeRecords.length);
+    grid.replaceChildren(...activeCards);
+    activeCards.forEach((card) => card.setAttribute('aria-hidden', 'false'));
+    window.addEventListener('resize', syncSlotCount, { passive: true });
     document.addEventListener('visibilitychange', () => {
-      if (document.hidden) stop();
-      else start();
+      if (document.hidden) {
+        clearTimer();
+        pauseAnimations();
+      } else {
+        if (sectionIsVisible) resumeAnimations();
+        if (sectionIsVisible && !isAnimating) scheduleNext();
+      }
     });
     reducedMotion.addEventListener?.('change', () => {
-      if (reducedMotion.matches) stop();
-      else start();
+      if (!isAnimating) scheduleNext();
     });
 
     if ('IntersectionObserver' in window) {
       const technologyObserver = new IntersectionObserver(([entry]) => {
         sectionIsVisible = entry.isIntersecting;
-        if (sectionIsVisible) start();
-        else stop();
+        if (sectionIsVisible) {
+          resumeAnimations();
+          scheduleNext();
+        } else {
+          clearTimer();
+          pauseAnimations();
+        }
       }, { threshold: 0.2 });
       technologyObserver.observe(grid.closest('section') || grid);
     } else {
       sectionIsVisible = true;
-      start();
+      scheduleNext();
     }
   };
 
