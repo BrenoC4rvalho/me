@@ -19,6 +19,7 @@
   };
 
   setTheme(root.dataset.theme || (root.classList.contains('dark') ? 'dark' : 'light'), false);
+  window.lucide?.createIcons();
 
   themeToggle?.addEventListener('click', () => {
     setTheme(root.classList.contains('dark') ? 'light' : 'dark');
