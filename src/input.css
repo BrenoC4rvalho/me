@@ -167,7 +167,6 @@
   .feature-icon svg { @apply h-7 w-7; }
   .feature-item h3 { @apply text-base font-bold; }
   .feature-item p { @apply mt-1 text-sm text-secondary; }
-  .section-rule { @apply mt-5 h-0.5 w-10 bg-accent; }
   .contact-grid { @apply grid max-w-2xl gap-12; }
   .contact-links { @apply flex flex-col gap-4; }
   .contact-links a { @apply inline-flex items-center gap-4 text-sm font-medium text-primary transition-colors hover:text-accent; }
