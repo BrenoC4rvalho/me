@@ -23,10 +23,10 @@ O projeto não possui backend. O formulário valida os dados e abre o aplicativo
 ## Estrutura
 
 - `index.html`: marcação semântica e conteúdo do portfólio.
-- `assets/computador.png`: ilustração usada no hero.
+- `assets/computador-768.webp` e `assets/computador-1536.webp`: versões responsivas da ilustração usada no hero.
+- `assets/fonts/inter-latin-variable.woff2`: fonte Inter local em formato variável.
 - `src/input.css`: fonte Tailwind e estilos customizados.
 - `src/style.css`: CSS compilado para uso no navegador.
 - `src/script.js`: tema, menu, navegação, animações e formulário.
-- `portifolio.png`: referência visual original.
 
 O tema escuro pode ser alternado no cabeçalho e a preferência fica salva no `localStorage`. Na primeira visita, o site respeita a preferência de tema do sistema operacional.

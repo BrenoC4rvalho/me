@@ -19,7 +19,7 @@
   };
 
   setTheme(root.dataset.theme || (root.classList.contains('dark') ? 'dark' : 'light'), false);
-  window.lucide?.createIcons();
+  window.portfolioIcons?.render();
 
   const projects = [
     {
@@ -188,6 +188,7 @@
       image.width = 44;
       image.height = 44;
       image.loading = 'lazy';
+      image.decoding = 'async';
       if (technology.iconClass) image.classList.add(technology.iconClass);
       card.append(image);
     }
@@ -246,12 +247,18 @@
   const createTechnologyElement = (technology, className = 'project-dialog-tech') => {
     const element = document.createElement('div');
     element.className = className;
-    if (technology.icon) {
+    if (technology.iconType === 'lucide') {
+      const icon = createLucideIcon(technology.icon);
+      if (technology.iconClass) icon.classList.add(technology.iconClass);
+      element.append(icon);
+    } else if (technology.icon) {
       const image = document.createElement('img');
       image.src = technology.icon;
       image.alt = '';
       image.width = 28;
       image.height = 28;
+      image.loading = 'lazy';
+      image.decoding = 'async';
       element.append(image);
     } else {
       const fallback = document.createElement('span');
@@ -278,7 +285,7 @@
       const title = card.querySelector('[data-project-title]')?.textContent.trim();
       if (title) card.setAttribute('aria-label', `Ver detalhes do projeto ${title}`);
     });
-    window.lucide?.createIcons();
+    window.portfolioIcons?.render();
     return cards;
   };
 
@@ -363,7 +370,7 @@
         dialog.setAttribute('open', '');
         dialog.classList.add('is-open');
       }
-      window.lucide?.createIcons();
+      window.portfolioIcons?.render();
       window.requestAnimationFrame(() => {
         dialog.classList.add('is-visible');
         closeButtons[0]?.focus();
@@ -462,7 +469,7 @@
     menuToggle.setAttribute('aria-expanded', 'false');
     menuToggle.setAttribute('aria-label', 'Abrir menu');
     menuToggle.innerHTML = '<i data-lucide="menu" aria-hidden="true"></i>';
-    window.lucide?.createIcons();
+    window.portfolioIcons?.render();
   };
 
   menuToggle?.addEventListener('click', () => {
@@ -471,7 +478,7 @@
     menuToggle.setAttribute('aria-expanded', String(shouldOpen));
     menuToggle.setAttribute('aria-label', shouldOpen ? 'Fechar menu' : 'Abrir menu');
     menuToggle.innerHTML = `<i data-lucide="${shouldOpen ? 'x' : 'menu'}" aria-hidden="true"></i>`;
-    window.lucide?.createIcons();
+    window.portfolioIcons?.render();
   });
 
   navLinks.forEach((link) => link.addEventListener('click', closeMobileMenu));
@@ -486,8 +493,7 @@
   };
 
   renderTechnologyCards();
-  renderTechnologyCategories();
-  window.lucide?.createIcons();
+  window.portfolioIcons?.render();
 
   if ('IntersectionObserver' in window) {
     const sectionObserver = new IntersectionObserver((entries) => {
@@ -761,6 +767,7 @@
     let activeTrigger = null;
     let closeTimer = null;
     let isClosing = false;
+    let categoriesRendered = false;
 
     const clearDialogState = () => {
       document.body.classList.remove('modal-open');
@@ -790,6 +797,11 @@
       if (closeTimer) window.clearTimeout(closeTimer);
       activeTrigger = trigger;
       animationController?.pause();
+      if (!categoriesRendered) {
+        renderTechnologyCategories();
+        window.portfolioIcons?.render();
+        categoriesRendered = true;
+      }
       document.body.classList.add('modal-open');
       dialog.classList.remove('is-closing');
       if (typeof dialog.showModal === 'function') dialog.showModal();

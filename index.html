@@ -59,9 +59,6 @@
       })();
     </script>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="./src/style.css" />
   </head>
   <body class="bg-page font-sans text-primary antialiased transition-colors duration-300">
@@ -125,7 +122,10 @@
           </div>
 
           <div class="hero-visual reveal reveal-delay-1">
-            <img src="./assets/computador.png" alt="Ilustração de um computador com código na tela" width="1536" height="1024" fetchpriority="high" />
+            <picture>
+              <source type="image/webp" srcset="./assets/computador-768.webp 768w, ./assets/computador-1536.webp 1536w" sizes="(min-width: 1024px) 590px, calc(100vw - 2.5rem)" />
+              <img src="./assets/computador-1536.webp" alt="Ilustração de um computador com código na tela" width="1536" height="1024" fetchpriority="high" loading="eager" decoding="async" />
+            </picture>
           </div>
         </div>
       </section>
@@ -325,7 +325,7 @@
       <div class="container border-t border-border py-4 text-center text-xs text-secondary"><p>&copy; <span data-current-year></span> Breno Carvalho. Todos os direitos reservados.</p></div>
     </footer>
 
-    <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+    <script src="./src/icons.js" defer></script>
     <script src="./src/script.js" defer></script>
   </body>
 </html>

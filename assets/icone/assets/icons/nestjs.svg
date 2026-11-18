@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 108 128" role="img" aria-label="NestJS">
-<title>NestJS</title>
-<rect x="2" y="2" width="104" height="124" rx="19" fill="#E0234E" fill-opacity=".075" stroke="#E0234E" stroke-opacity=".22" stroke-width="2"/>
-<g fill="none" stroke="#E0234E" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><path d="m54 17 32 18v38L54 91 22 73V35Z"/></g>
-<rect x="9" y="98" width="90" height="23" rx="8" fill="#E0234E"/>
-<text x="54" y="114" font-family="Arial,Helvetica,sans-serif" font-size="13" font-weight="700" text-anchor="middle" fill="white">NestJS</text>
-</svg>
