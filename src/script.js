@@ -132,7 +132,7 @@
         { name: 'Tailwind CSS', icon: './assets/icons/tailwindcss.svg' }
       ],
       githubUrl: null,
-      demoUrl: null
+      demoUrl: 'https://gestaodireta.brenocarvalhodev.io/'
     },
     {
       id: 'notificacoes',
@@ -289,10 +289,11 @@
     if (!grid) return;
 
     const fragment = document.createDocumentFragment();
-    projects.forEach((project, index) => {
+    projects.forEach((project) => {
       const card = document.createElement('article');
-      card.className = `project-card reveal${index % 3 ? ` reveal-delay-${index % 3}` : ''}`;
+      card.className = 'project-card';
       card.dataset.projectId = project.id;
+      card.dataset.projectCard = '';
       card.tabIndex = 0;
       card.setAttribute('role', 'button');
       card.setAttribute('aria-haspopup', 'dialog');
@@ -324,7 +325,17 @@
         stack.append(technologyName);
       });
 
-      card.append(icon, title, category, description, stack);
+      const interactionHint = document.createElement('span');
+      interactionHint.className = 'project-interaction-hint';
+      interactionHint.setAttribute('aria-hidden', 'true');
+      interactionHint.dataset.projectHint = '';
+      interactionHint.append(createLucideIcon('arrow-up-right'));
+      const interactionLabel = document.createElement('span');
+      interactionLabel.dataset.projectHintLabel = '';
+      interactionLabel.textContent = 'Ver detalhes';
+      interactionHint.append(interactionLabel);
+
+      card.append(icon, title, category, description, stack, interactionHint);
       fragment.append(card);
     });
     grid.replaceChildren(fragment);
@@ -420,6 +431,45 @@
     };
 
     renderProjectCards();
+    const projectCards = [...grid.querySelectorAll('[data-project-card]')];
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const projectStagger = 100;
+    const projectRevealDuration = 700;
+    const projectSequenceDuration = projectRevealDuration + Math.max(0, projectCards.length - 1) * projectStagger;
+
+    const showProjectHint = () => {
+      const firstCard = projectCards[0];
+      const hintLabel = firstCard?.querySelector('[data-project-hint-label]');
+      if (!firstCard || !hintLabel) return;
+      firstCard.classList.add('is-project-hint');
+      hintLabel.textContent = 'Clique para ver detalhes';
+      window.setTimeout(() => {
+        firstCard.classList.remove('is-project-hint');
+        hintLabel.textContent = 'Ver detalhes';
+      }, 2000);
+    };
+
+    if (!reducedMotion.matches && 'IntersectionObserver' in window) {
+      projectCards.forEach((card, index) => {
+        card.classList.add('project-card-entrance');
+        card.style.setProperty('--project-delay', `${index * projectStagger}ms`);
+      });
+
+      const projectObserver = new IntersectionObserver(([entry], observer) => {
+        if (!entry.isIntersecting) return;
+        observer.disconnect();
+        projectCards.forEach((card) => card.classList.add('is-project-visible'));
+        window.setTimeout(() => {
+          projectCards.forEach((card) => {
+            card.classList.remove('project-card-entrance', 'is-project-visible');
+            card.style.removeProperty('--project-delay');
+          });
+          showProjectHint();
+        }, projectSequenceDuration);
+      }, { threshold: 0.3 });
+      projectObserver.observe(grid.closest('section') || grid);
+    }
+
     grid.addEventListener('click', (event) => {
       const card = event.target.closest('[data-project-id]');
       if (card) openDialog(card);

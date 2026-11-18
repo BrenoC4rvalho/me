@@ -76,6 +76,17 @@
   .project-stack { @apply mt-auto flex flex-wrap gap-x-3 gap-y-2 pt-6 text-xs font-medium text-secondary; }
   .project-stack span { @apply relative; }
   .project-stack span:not(:last-child)::after { content: '•'; @apply absolute -right-2 text-border; }
+  .project-interaction-hint { @apply mt-4 inline-flex items-center gap-1.5 self-start text-xs font-semibold text-accent transition-all duration-200; }
+  .project-interaction-hint svg { @apply h-4 w-4 transition-transform duration-200; }
+  .project-card:hover .project-interaction-hint svg { transform: translate(3px, -3px); }
+  .project-card-entrance { opacity: 0; transform: translateY(15px); transition: opacity 700ms ease, transform 700ms ease, border-color 250ms ease, box-shadow 250ms ease; }
+  .project-card-entrance.is-project-visible { opacity: 1; transform: translateY(0); transition-delay: var(--project-delay, 0ms); }
+  .project-card.is-project-hint { @apply border-accent; transform: translateY(-5px); box-shadow: 0 12px 28px rgba(255, 101, 0, 0.16); }
+  .project-card.is-project-hint .project-interaction-hint { @apply text-accent; opacity: 1; }
+  @media (hover: hover) and (pointer: fine) {
+    .project-interaction-hint { opacity: 0.65; }
+    .project-card:hover .project-interaction-hint { opacity: 1; }
+  }
   .project-dialog { @apply m-auto w-[calc(100%-2rem)] max-w-[720px] overflow-hidden rounded-2xl border border-border bg-card p-0 text-primary shadow-2xl; max-height: calc(100dvh - 2rem); opacity: 0; transform: translateY(0.5rem) scale(0.98); transition: opacity 180ms ease, transform 180ms ease; }
   .project-dialog[open] { @apply flex; }
   .project-dialog.is-open { @apply flex; }
