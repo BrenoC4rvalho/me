@@ -35,8 +35,13 @@
   .section-anchor { scroll-margin-top: 92px; }
   .site-header { @apply fixed inset-x-0 top-0 z-50 border-b border-transparent bg-page backdrop-blur-md transition-colors duration-300; background-color: color-mix(in srgb, var(--color-page) 82%, transparent); }
   .site-header.is-scrolled { @apply border-border shadow-sm; }
-  .brand { @apply inline-flex items-center gap-3 text-base font-bold tracking-[-0.02em] text-primary transition-colors hover:text-accent; }
-  .brand-mark { @apply text-xl font-extrabold tracking-[-0.12em] text-accent; }
+  .brand { @apply inline-flex items-center gap-3 text-lg font-bold tracking-[-0.02em] text-primary transition-colors hover:text-accent; }
+  @keyframes brand-cube-float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-6px) rotate(1deg); }
+  }
+  .brand-mark { @apply h-10 w-10 shrink-0 object-contain; animation: brand-cube-float 4s ease-in-out infinite; transition: transform 0.3s ease; }
+  .brand-mark:hover { transform: scale(1.05) rotate(2deg); }
   .nav-link { @apply relative py-2 text-sm font-medium text-secondary transition-colors hover:text-primary; }
   .nav-link::after { content: ''; @apply absolute inset-x-0 -bottom-[9px] h-0.5 origin-left scale-x-0 bg-accent transition-transform; }
   .nav-link:hover::after, .nav-link.is-active::after { @apply scale-x-100; }
