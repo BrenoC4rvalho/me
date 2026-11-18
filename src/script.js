@@ -61,7 +61,7 @@
         { name: 'Java 17', icon: './assets/icons/java.svg' },
         { name: 'Spring Boot 3', icon: './assets/icons/springboot.svg' },
         { name: 'Angular 19', icon: './assets/icons/angular.svg' },
-        { name: 'Bootstrap 5', icon: null }
+        { name: 'Bootstrap 5', icon: './assets/icons/bootstrap.svg' }
       ],
       githubUrl: null,
       demoUrl: null
@@ -81,7 +81,9 @@
       technologies: [
         { name: 'Java 8', icon: './assets/icons/java.svg' },
         { name: 'Spring Boot 1', icon: './assets/icons/springboot.svg' },
-        { name: 'AngularJS', icon: './assets/icons/angular.svg' }
+        { name: 'AngularJS', icon: './assets/icons/angularjs.svg' },
+        { name: 'Bootstrap 5', icon: './assets/icons/bootstrap.svg' },
+        { name: 'jQuery', icon: './assets/icons/jquery.svg' }
       ],
       githubUrl: null,
       demoUrl: null
@@ -123,7 +125,11 @@
       technologies: [
         { name: 'Angular', icon: './assets/icons/angular.svg' },
         { name: 'Java', icon: './assets/icons/java.svg' },
-        { name: 'Spring Boot', icon: './assets/icons/springboot.svg' }
+        { name: 'Spring Boot', icon: './assets/icons/springboot.svg' },
+        { name: 'Spring AI', icon: './assets/icons/springai.svg' },
+        { name: 'Spring Security', icon: './assets/icons/springsecurity.svg' },
+        { name: 'Gemini', icon: './assets/icons/googlegemini.svg' },
+        { name: 'Tailwind CSS', icon: './assets/icons/tailwindcss.svg' }
       ],
       githubUrl: null,
       demoUrl: null
@@ -143,8 +149,8 @@
       technologies: [
         { name: 'Java', icon: './assets/icons/java.svg' },
         { name: 'Spring Boot', icon: './assets/icons/springboot.svg' },
-        { name: 'Spring Security', icon: null },
-        { name: 'Twilio', icon: null }
+        { name: 'Spring Security', icon: './assets/icons/springsecurity.svg' },
+        { name: 'Twilio', icon: './assets/icons/twilio.svg' }
       ],
       githubUrl: null,
       demoUrl: null
@@ -315,7 +321,7 @@
       const stack = document.createElement('div');
       stack.className = 'project-stack';
       stack.setAttribute('aria-label', 'Tecnologias utilizadas');
-      project.technologies.forEach((technology) => {
+      project.technologies.slice(0, 4).forEach((technology) => {
         const technologyName = document.createElement('span');
         technologyName.textContent = technology.name;
         stack.append(technologyName);
