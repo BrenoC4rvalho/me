@@ -4,9 +4,10 @@
   "private": true,
   "description": "Portfólio profissional de Breno Carvalho, Desenvolvedor Full Stack.",
   "scripts": {
-    "build": "tailwindcss -i ./src/input.css -o ./src/style.css --minify",
+    "build:css": "tailwindcss -i ./src/input.css -o ./src/style.css --minify",
+    "build": "npm run build:css && node ./scripts/build-dist.mjs",
     "dev": "tailwindcss -i ./src/input.css -o ./src/style.css --watch",
-    "check": "npm run build && node --check ./src/script.js"
+    "check": "npm run build && node --check ./src/icons.js && node --check ./src/script.js"
   },
   "devDependencies": {
     "tailwindcss": "3.4.17"
