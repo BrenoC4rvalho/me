@@ -96,29 +96,11 @@
               <p class="section-description">Principais tecnologias e ferramentas que utilizo no dia a dia.</p>
             </div>
           </div>
-          <div class="tech-grid mt-8" data-tech-grid aria-label="Tecnologias utilizadas">
-            <div class="tech-card reveal" data-tech-card><img src="./assets/icons/html5.svg" alt="HTML5" width="44" height="44" loading="lazy" /><span>HTML5</span></div>
-            <div class="tech-card reveal reveal-delay-1" data-tech-card><img src="./assets/icons/css3.svg" alt="CSS3" width="44" height="44" loading="lazy" /><span>CSS3</span></div>
-            <div class="tech-card reveal reveal-delay-2" data-tech-card><img src="./assets/icons/javascript.svg" alt="JavaScript" width="44" height="44" loading="lazy" /><span>JavaScript</span></div>
-            <div class="tech-card reveal" data-tech-card><img src="./assets/icons/typescript.svg" alt="TypeScript" width="44" height="44" loading="lazy" /><span>TypeScript</span></div>
-            <div class="tech-card reveal reveal-delay-1" data-tech-card><img src="./assets/icons/angular.svg" alt="Angular" width="44" height="44" loading="lazy" /><span>Angular</span></div>
-            <div class="tech-card reveal reveal-delay-2" data-tech-card><img src="./assets/icons/react.svg" alt="React" width="44" height="44" loading="lazy" /><span>React</span></div>
-            <div class="tech-card reveal" data-tech-card><img src="./assets/icons/tailwindcss.svg" alt="Tailwind CSS" width="44" height="44" loading="lazy" /><span>Tailwind CSS</span></div>
-            <div class="tech-card reveal reveal-delay-1" data-tech-card><img src="./assets/icons/java.svg" alt="Java" width="44" height="44" loading="lazy" /><span>Java</span></div>
-            <div class="tech-card reveal reveal-delay-2" data-tech-card><img src="./assets/icons/springboot.svg" alt="Ícone representativo de Spring Boot, baseado no Spring" width="44" height="44" loading="lazy" /><span>Spring Boot</span></div>
-            <div class="tech-card reveal" data-tech-card><img src="./assets/icons/nodejs.svg" alt="Node.js" width="44" height="44" loading="lazy" /><span>Node.js</span></div>
-            <div class="tech-card reveal reveal-delay-1" data-tech-card><img class="tech-icon-monochrome" src="./assets/icons/express.svg" alt="Express.js" width="44" height="44" loading="lazy" /><span>Express.js</span></div>
-            <div class="tech-card reveal reveal-delay-2" data-tech-card><img src="./assets/icons/nestjs.svg" alt="NestJS" width="44" height="44" loading="lazy" /><span>NestJS</span></div>
-            <div class="tech-card reveal" data-tech-card><img class="tech-icon-representative" src="./assets/icons/sql.svg" alt="Ícone representativo de SQL, baseado no Microsoft SQL Server" width="44" height="44" loading="lazy" /><span>SQL</span></div>
-            <div class="tech-card reveal reveal-delay-1" data-tech-card><img class="tech-icon-representative" src="./assets/icons/nosql.svg" alt="Ícone representativo de NoSQL, baseado no MongoDB" width="44" height="44" loading="lazy" /><span>NoSQL</span></div>
-            <div class="tech-card reveal reveal-delay-2" data-tech-card><img src="./assets/icons/postgresql.svg" alt="PostgreSQL" width="44" height="44" loading="lazy" /><span>PostgreSQL</span></div>
-            <div class="tech-card reveal" data-tech-card><img src="./assets/icons/mysql.svg" alt="MySQL" width="44" height="44" loading="lazy" /><span>MySQL</span></div>
-            <div class="tech-card reveal reveal-delay-1" data-tech-card><img src="./assets/icons/oracle.svg" alt="Oracle Database" width="44" height="44" loading="lazy" /><span>Oracle Database</span></div>
-            <div class="tech-card reveal" data-tech-card><img src="./assets/icons/git.svg" alt="Git" width="44" height="44" loading="lazy" /><span>Git</span></div>
-            <div class="tech-card reveal reveal-delay-1" data-tech-card><img class="tech-icon-monochrome" src="./assets/icons/github.svg" alt="GitHub" width="44" height="44" loading="lazy" /><span>GitHub</span></div>
-            <div class="tech-card reveal reveal-delay-2" data-tech-card><img src="./assets/icons/docker.svg" alt="Docker" width="44" height="44" loading="lazy" /><span>Docker</span></div>
-            <div class="tech-card reveal" data-tech-card><img src="./assets/icons/cicd.svg" alt="Ícone representativo de CI/CD, baseado no GitHub Actions" width="44" height="44" loading="lazy" /><span>CI/CD</span></div>
-          </div>
+          <div class="tech-grid mt-8" data-tech-grid aria-label="Tecnologias utilizadas"></div>
+          <button class="technology-dialog-trigger button button-primary" type="button" data-technology-dialog-open aria-haspopup="dialog" aria-controls="technology-dialog">
+            <i data-lucide="grid-2x2" aria-hidden="true"></i>
+            <span>Ver todas as tecnologias</span>
+          </button>
         </div>
       </section>
 
@@ -171,6 +153,28 @@
         </div>
       </section>
     </main>
+
+    <dialog id="technology-dialog" class="technology-dialog" data-technology-dialog aria-labelledby="technology-dialog-title" aria-describedby="technology-dialog-description">
+      <div class="technology-dialog-surface">
+        <header class="technology-dialog-header">
+          <div class="technology-dialog-heading">
+            <span class="technology-dialog-mark" aria-hidden="true"><i data-lucide="grid-2x2"></i></span>
+            <div>
+              <p class="technology-dialog-kicker">Stack principal</p>
+              <h2 id="technology-dialog-title" class="text-2xl font-bold">Todas as tecnologias</h2>
+              <p id="technology-dialog-description" class="mt-2 text-sm leading-6 text-secondary">Tecnologias e ferramentas que fazem parte do meu trabalho.</p>
+            </div>
+          </div>
+          <button class="technology-dialog-close" type="button" data-technology-dialog-close aria-label="Fechar todas as tecnologias">
+            <i data-lucide="x" aria-hidden="true"></i>
+          </button>
+        </header>
+        <div class="technology-dialog-body">
+          <p class="technology-dialog-summary" data-technology-summary></p>
+          <div data-technology-categories></div>
+        </div>
+      </div>
+    </dialog>
 
     <dialog class="project-dialog" data-project-dialog aria-labelledby="project-dialog-title" aria-describedby="project-dialog-description">
       <div class="project-dialog-surface">

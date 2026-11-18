@@ -158,6 +158,106 @@
     return icon;
   };
 
+  const technologyCategories = ['Frontend', 'Backend', 'Banco de dados', 'Ferramentas'];
+  const technologies = [
+    { name: 'HTML5', category: 'Frontend', icon: './assets/icons/html5.svg' },
+    { name: 'CSS3', category: 'Frontend', icon: './assets/icons/css3.svg' },
+    { name: 'JavaScript', category: 'Frontend', icon: './assets/icons/javascript.svg' },
+    { name: 'TypeScript', category: 'Frontend', icon: './assets/icons/typescript.svg' },
+    { name: 'Angular', category: 'Frontend', icon: './assets/icons/angular.svg' },
+    { name: 'React', category: 'Frontend', icon: './assets/icons/react.svg' },
+    { name: 'Tailwind CSS', category: 'Frontend', icon: './assets/icons/tailwindcss.svg' },
+    { name: 'Java', category: 'Backend', icon: './assets/icons/java.svg' },
+    { name: 'Spring Boot', category: 'Backend', icon: './assets/icons/springboot.svg' },
+    { name: 'Node.js', category: 'Backend', icon: './assets/icons/nodejs.svg' },
+    { name: 'Express.js', category: 'Backend', icon: './assets/icons/express.svg', iconClass: 'tech-icon-monochrome' },
+    { name: 'NestJS', category: 'Backend', icon: './assets/icons/nestjs.svg' },
+    { name: 'SQL', category: 'Banco de dados', icon: 'database', iconType: 'lucide', iconClass: 'technology-icon-sql' },
+    { name: 'PostgreSQL', category: 'Banco de dados', icon: './assets/icons/postgresql.svg' },
+    { name: 'MySQL', category: 'Banco de dados', icon: './assets/icons/mysql.svg' },
+    { name: 'Oracle Database', category: 'Banco de dados', icon: './assets/icons/oracle.svg' },
+    { name: 'Redis', category: 'Banco de dados', icon: './assets/icons/redis.svg' },
+    { name: 'NoSQL', category: 'Banco de dados', icon: 'database', iconType: 'lucide', iconClass: 'technology-icon-nosql' },
+    { name: 'MongoDB', category: 'Banco de dados', icon: './assets/icons/nosql.svg', iconClass: 'tech-icon-representative' },
+    { name: 'Git', category: 'Ferramentas', icon: './assets/icons/git.svg' },
+    { name: 'GitHub', category: 'Ferramentas', icon: './assets/icons/github.svg', iconClass: 'tech-icon-monochrome' },
+    { name: 'Docker', category: 'Ferramentas', icon: './assets/icons/docker.svg' },
+    { name: 'CI/CD', category: 'Ferramentas', icon: './assets/icons/cicd.svg', iconClass: 'tech-icon-representative' }
+  ];
+
+  const createTechnologyCard = (technology, className) => {
+    const card = document.createElement('div');
+    card.className = className;
+
+    if (technology.iconType === 'lucide') {
+      const icon = createLucideIcon(technology.icon);
+      if (technology.iconClass) icon.classList.add(technology.iconClass);
+      card.append(icon);
+    } else {
+      const image = document.createElement('img');
+      image.src = technology.icon;
+      image.alt = '';
+      image.width = 44;
+      image.height = 44;
+      image.loading = 'lazy';
+      if (technology.iconClass) image.classList.add(technology.iconClass);
+      card.append(image);
+    }
+
+    const name = document.createElement('span');
+    name.textContent = technology.name;
+    card.append(name);
+    return card;
+  };
+
+  const renderTechnologyCards = () => {
+    const grid = document.querySelector('[data-tech-grid]');
+    if (!grid) return;
+
+    const fragment = document.createDocumentFragment();
+    technologies.forEach((technology, index) => {
+      const delay = index % 3;
+      const className = `tech-card reveal${delay ? ` reveal-delay-${delay}` : ''}`;
+      const card = createTechnologyCard(technology, className);
+      card.dataset.techCard = '';
+      fragment.append(card);
+    });
+    grid.replaceChildren(fragment);
+  };
+
+  const renderTechnologyCategories = () => {
+    const container = document.querySelector('[data-technology-categories]');
+    if (!container) return;
+
+    const summary = document.querySelector('[data-technology-summary]');
+    if (summary) summary.textContent = `${technologies.length} tecnologias organizadas por categoria`;
+
+    const fragment = document.createDocumentFragment();
+    technologyCategories.forEach((category) => {
+      const section = document.createElement('section');
+      section.className = 'technology-category';
+      const categoryTechnologies = technologies.filter((technology) => technology.category === category);
+      const heading = document.createElement('div');
+      heading.className = 'technology-category-heading';
+      const title = document.createElement('h3');
+      title.className = 'text-base font-bold';
+      title.textContent = category;
+      const count = document.createElement('span');
+      count.className = 'technology-category-count';
+      count.textContent = String(categoryTechnologies.length).padStart(2, '0');
+      heading.append(title, count);
+      const grid = document.createElement('div');
+      grid.className = 'technology-category-grid';
+      grid.setAttribute('aria-label', `Tecnologias de ${category}`);
+
+      categoryTechnologies.forEach((technology) => grid.append(createTechnologyCard(technology, 'technology-card')));
+
+      section.append(heading, grid);
+      fragment.append(section);
+    });
+    container.replaceChildren(fragment);
+  };
+
   const createTechnologyElement = (technology, className = 'project-dialog-tech') => {
     const element = document.createElement('div');
     element.className = className;
@@ -393,6 +493,10 @@
     navLinks.forEach((link) => link.classList.toggle('is-active', link.getAttribute('href') === `#${id}`));
   };
 
+  renderTechnologyCards();
+  renderTechnologyCategories();
+  window.lucide?.createIcons();
+
   if ('IntersectionObserver' in window) {
     const sectionObserver = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
@@ -612,9 +716,107 @@
       sectionIsVisible = true;
       scheduleNext();
     }
+
+    return {
+      pause() {
+        clearTimer();
+        pauseAnimations();
+      },
+      resume() {
+        if (document.hidden || !sectionIsVisible) return;
+        resumeAnimations();
+        if (!isAnimating) scheduleNext();
+      }
+    };
   };
 
-  setupTechnologyShuffle();
+  const technologyAnimation = setupTechnologyShuffle();
+
+  const setupTechnologyDialog = (animationController) => {
+    const trigger = document.querySelector('[data-technology-dialog-open]');
+    const dialog = document.querySelector('[data-technology-dialog]');
+    if (!trigger || !dialog) return;
+
+    const closeButton = dialog.querySelector('[data-technology-dialog-close]');
+    const focusableSelector = 'button, a[href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+    let activeTrigger = null;
+    let closeTimer = null;
+    let isClosing = false;
+
+    const clearDialogState = () => {
+      document.body.classList.remove('modal-open');
+      dialog.classList.remove('is-visible', 'is-closing', 'is-open');
+      isClosing = false;
+      animationController?.resume();
+      if (activeTrigger) activeTrigger.focus();
+      activeTrigger = null;
+    };
+
+    const closeDialog = () => {
+      if (!activeTrigger || isClosing) return;
+      isClosing = true;
+      dialog.classList.remove('is-visible');
+      dialog.classList.add('is-closing');
+      closeTimer = window.setTimeout(() => {
+        if (dialog.open && typeof dialog.close === 'function') dialog.close();
+        else {
+          dialog.removeAttribute('open');
+          clearDialogState();
+        }
+      }, 180);
+    };
+
+    const openDialog = () => {
+      if (dialog.open || isClosing) return;
+      if (closeTimer) window.clearTimeout(closeTimer);
+      activeTrigger = trigger;
+      animationController?.pause();
+      document.body.classList.add('modal-open');
+      dialog.classList.remove('is-closing');
+      if (typeof dialog.showModal === 'function') dialog.showModal();
+      else {
+        dialog.setAttribute('open', '');
+        dialog.classList.add('is-open');
+      }
+      window.requestAnimationFrame(() => {
+        dialog.classList.add('is-visible');
+        closeButton?.focus();
+      });
+    };
+
+    trigger.addEventListener('click', openDialog);
+    closeButton?.addEventListener('click', closeDialog);
+    dialog.addEventListener('click', (event) => {
+      if (event.target === dialog) closeDialog();
+    });
+    dialog.addEventListener('cancel', (event) => {
+      event.preventDefault();
+      closeDialog();
+    });
+    dialog.addEventListener('close', clearDialogState);
+    dialog.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        closeDialog();
+        return;
+      }
+      if (event.key !== 'Tab') return;
+      const focusableElements = [...dialog.querySelectorAll(focusableSelector)]
+        .filter((element) => !element.hasAttribute('disabled') && element.offsetParent !== null);
+      if (!focusableElements.length) return;
+      const first = focusableElements[0];
+      const last = focusableElements[focusableElements.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    });
+  };
+
+  setupTechnologyDialog(technologyAnimation);
 
   document.querySelector('[data-current-year]')?.replaceChildren(String(new Date().getFullYear()));
 })();

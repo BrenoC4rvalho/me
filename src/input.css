@@ -99,12 +99,41 @@
   .project-dialog-links svg { @apply h-4 w-4; }
   .project-dialog-footer { @apply flex justify-end border-t border-border px-6 py-4 sm:px-7; }
   body.modal-open { @apply overflow-hidden; }
+  .technology-dialog-trigger { @apply mx-auto mt-8; }
+  .technology-dialog { @apply m-auto w-[calc(100%-1rem)] max-w-[850px] overflow-hidden rounded-2xl border border-border bg-card p-0 text-primary shadow-2xl; max-height: 85vh; max-height: 85dvh; opacity: 0; transform: translateY(0.5rem) scale(0.98); transition: opacity 180ms ease, transform 180ms ease; }
+  .technology-dialog[open] { @apply flex; }
+  .technology-dialog.is-open { @apply flex; }
+  .technology-dialog.is-visible { opacity: 1; transform: translateY(0) scale(1); }
+  .technology-dialog.is-closing { opacity: 0; transform: translateY(0.5rem) scale(0.98); }
+  .technology-dialog::backdrop { background: rgba(15, 23, 42, 0.68); backdrop-filter: blur(2px); }
+  .technology-dialog-surface { @apply flex max-h-[85vh] min-h-0 flex-col; max-height: 85dvh; }
+  .technology-dialog-header { @apply flex items-start justify-between gap-4 border-b border-border bg-card p-5 sm:p-7; }
+  .technology-dialog-heading { @apply flex min-w-0 items-start gap-4; }
+  .technology-dialog-mark { @apply inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-border text-accent; background-color: var(--color-card); }
+  .technology-dialog-mark svg { @apply h-5 w-5; }
+  .technology-dialog-kicker { @apply text-xs font-semibold uppercase tracking-[0.12em] text-accent; }
+  .technology-dialog-close { @apply inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-secondary transition-colors hover:bg-surface hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent; }
+  .technology-dialog-close svg { @apply h-5 w-5; }
+  .technology-dialog-body { @apply min-h-0 overflow-y-auto px-5 py-6 sm:px-7 sm:py-7; background-color: var(--color-card); overscroll-behavior: contain; }
+  .technology-dialog-summary { @apply mb-6 text-xs font-medium uppercase tracking-[0.1em] text-secondary; }
+  .technology-category + .technology-category { @apply mt-8; }
+  .technology-category-heading { @apply flex items-center justify-between gap-3; }
+  .technology-category-count { @apply rounded-full border border-border px-2 py-0.5 text-[10px] font-bold tracking-[0.08em] text-secondary; }
+  .technology-category-grid { @apply mt-4 grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-5; }
+  .technology-card { @apply flex min-h-[118px] flex-col items-center justify-center gap-3 rounded-xl border border-border px-2 py-4 text-center text-sm font-medium text-primary transition-all duration-200 hover:-translate-y-0.5 hover:border-accent hover:shadow-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent; background-color: var(--color-card); }
+  .technology-card img { @apply h-11 w-11 object-contain; }
+  .technology-card svg { @apply h-11 w-11 text-accent; }
+  .technology-card svg.technology-icon-nosql, .tech-card svg.technology-icon-nosql { color: #47a248; }
+  .technology-card svg.technology-icon-sql, .tech-card svg.technology-icon-sql { color: #ff6500; }
+  .technology-card img.tech-icon-monochrome { @apply rounded-md bg-white p-1; }
+  .technology-card img.tech-icon-representative { @apply opacity-90; }
   .tech-grid { --tech-visible-count: 2; @apply relative mt-8 grid overflow-hidden; grid-template-columns: repeat(var(--tech-visible-count), minmax(0, 1fr)); grid-template-rows: auto; grid-auto-rows: 0; column-gap: 1rem; row-gap: 0; contain: layout paint; }
   .tech-card { @apply flex aspect-square min-h-0 w-full flex-col items-center justify-center gap-3 rounded-xl border border-border bg-surface px-3 py-4 text-center text-sm font-medium text-primary transition-all duration-200 hover:-translate-y-1 hover:border-orange-200 hover:shadow-card dark:hover:border-orange-900; will-change: transform; }
   .tech-card.is-tech-incoming { position: absolute; z-index: 3; pointer-events: none; will-change: transform, opacity; }
   .tech-card.is-tech-impact { z-index: 2; box-shadow: 0 0 0 2px rgba(255, 101, 0, 0.2), 0 14px 30px rgba(15, 23, 42, 0.12); }
   .tech-card.is-tech-exiting { pointer-events: none; will-change: transform, opacity; }
   .tech-card img { @apply h-11 w-11 object-contain; }
+  .tech-card svg { @apply h-11 w-11 text-accent; }
   .tech-card img.tech-icon-monochrome { @apply rounded-md bg-white p-1; }
   .tech-card img.tech-icon-representative { @apply opacity-90; }
   .about-grid { @apply grid gap-12 lg:grid-cols-[1fr_1fr] lg:gap-16; }
@@ -142,4 +171,5 @@
   .reveal { opacity: 1; transform: none; }
   .tech-card.is-tech-impact { box-shadow: none; }
   .project-dialog { transition: none; }
+  .technology-dialog { transition: none; }
 }
