@@ -24,10 +24,7 @@
   const projects = [
     {
       id: 'intelippec',
-      title: 'InteliPec',
-      category: 'Antharys Tecnologia',
       icon: 'beef',
-      description: 'Sistema de gestão pecuária para centralizar informações do rebanho, acompanhar indicadores e apoiar a tomada de decisões na operação.',
       features: [
         'Refatoração da arquitetura multi-tenant.',
         'Automatização da troca de schemas.',
@@ -46,10 +43,7 @@
     },
     {
       id: 'nfse',
-      title: 'Módulo Emissor de NFS-e',
-      category: 'Antharys Tecnologia',
       icon: 'receipt-text',
-      description: 'Módulo para emissão e gerenciamento de notas fiscais de serviço eletrônicas, integrado ao fluxo operacional do sistema empresarial.',
       features: [
         'Emissão e cancelamento de NFS-e.',
         'Processamento médio de 1.500 notas por dia.',
@@ -68,10 +62,7 @@
     },
     {
       id: 'orcamento',
-      title: 'Módulo de Orçamento',
-      category: 'Antharys Tecnologia',
       icon: 'calculator',
-      description: 'Módulo para elaboração, acompanhamento e controle de orçamentos, apoiando a organização comercial e financeira das empresas.',
       features: [
         'Substituição de 10 planilhas Excel por duas telas.',
         'API REST para gestão de orçamentos.',
@@ -90,10 +81,7 @@
     },
     {
       id: 'erp-mineradora',
-      title: 'ERP para Mineradora',
-      category: 'Antharys Tecnologia',
       icon: 'hard-hat',
-      description: 'Sistema integrado de gestão empresarial para uma mineradora, reunindo processos operacionais, administrativos e financeiros em uma única solução.',
       features: [
         'Gestão financeira e vendas.',
         'Cadastro de múltiplos caixas.',
@@ -112,10 +100,7 @@
     },
     {
       id: 'gestao-direta',
-      title: 'Gestão Direta',
-      category: 'TCC',
       icon: 'sprout',
-      description: 'Plataforma de gestão financeira para pequenos produtores rurais, com controle de receitas, despesas, safras, fluxo de caixa, relatórios e integração com inteligência artificial e Telegram.',
       features: [
         'Gestão de receitas, despesas e safras.',
         'Fluxo de caixa e relatórios.',
@@ -136,10 +121,7 @@
     },
     {
       id: 'notificacoes',
-      title: 'Sistema de Notificações',
-      category: 'Hackathon',
       icon: 'clipboard-check',
-      description: 'API RESTful para envio automatizado de notificações pelo WhatsApp, utilizando Spring Security e integração com Twilio.',
       features: [
         'Desenvolvimento de API RESTful.',
         'Segurança com Spring Security.',
@@ -284,62 +266,20 @@
     return element;
   };
 
-  const renderProjectCards = () => {
+  const prepareProjectCards = () => {
     const grid = document.querySelector('[data-project-grid]');
-    if (!grid) return;
+    if (!grid) return [];
 
-    const fragment = document.createDocumentFragment();
-    projects.forEach((project) => {
-      const card = document.createElement('article');
-      card.className = 'project-card';
-      card.dataset.projectId = project.id;
-      card.dataset.projectCard = '';
+    const cards = [...grid.querySelectorAll('[data-project-card][data-project-id]')];
+    cards.forEach((card) => {
       card.tabIndex = 0;
       card.setAttribute('role', 'button');
       card.setAttribute('aria-haspopup', 'dialog');
-      card.setAttribute('aria-label', `Ver detalhes do projeto ${project.title}`);
-
-      const icon = document.createElement('div');
-      icon.className = 'project-icon';
-      icon.setAttribute('aria-hidden', 'true');
-      icon.append(createLucideIcon(project.icon));
-
-      const title = document.createElement('h3');
-      title.className = 'mt-5 text-lg font-bold';
-      title.textContent = project.title;
-
-      const category = document.createElement('p');
-      category.className = 'project-category';
-      category.textContent = project.category;
-
-      const description = document.createElement('p');
-      description.className = 'mt-2 text-sm leading-6 text-secondary';
-      description.textContent = project.description;
-
-      const stack = document.createElement('div');
-      stack.className = 'project-stack';
-      stack.setAttribute('aria-label', 'Tecnologias utilizadas');
-      project.technologies.slice(0, 4).forEach((technology) => {
-        const technologyName = document.createElement('span');
-        technologyName.textContent = technology.name;
-        stack.append(technologyName);
-      });
-
-      const interactionHint = document.createElement('span');
-      interactionHint.className = 'project-interaction-hint';
-      interactionHint.setAttribute('aria-hidden', 'true');
-      interactionHint.dataset.projectHint = '';
-      interactionHint.append(createLucideIcon('arrow-up-right'));
-      const interactionLabel = document.createElement('span');
-      interactionLabel.dataset.projectHintLabel = '';
-      interactionLabel.textContent = 'Ver detalhes';
-      interactionHint.append(interactionLabel);
-
-      card.append(icon, title, category, description, stack, interactionHint);
-      fragment.append(card);
+      const title = card.querySelector('[data-project-title]')?.textContent.trim();
+      if (title) card.setAttribute('aria-label', `Ver detalhes do projeto ${title}`);
     });
-    grid.replaceChildren(fragment);
     window.lucide?.createIcons();
+    return cards;
   };
 
   const setupProjectDetails = () => {
@@ -388,9 +328,9 @@
       if (closeTimer) window.clearTimeout(closeTimer);
       activeCard = card;
       dialogIcon.replaceChildren(createLucideIcon(project.icon));
-      dialogTitle.textContent = project.title;
-      dialogCategory.textContent = project.category;
-      dialogDescription.textContent = project.description;
+      dialogTitle.textContent = card.querySelector('[data-project-title]')?.textContent.trim() || '';
+      dialogCategory.textContent = card.querySelector('[data-project-category]')?.textContent.trim() || '';
+      dialogDescription.textContent = card.querySelector('[data-project-description]')?.textContent.trim() || '';
       dialogFeatures.replaceChildren(...project.features.map((feature) => {
         const item = document.createElement('li');
         item.textContent = feature;
@@ -430,8 +370,7 @@
       });
     };
 
-    renderProjectCards();
-    const projectCards = [...grid.querySelectorAll('[data-project-card]')];
+    const projectCards = prepareProjectCards();
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
     const projectStagger = 100;
     const projectRevealDuration = 700;
