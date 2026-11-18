@@ -235,9 +235,6 @@
     const container = document.querySelector('[data-technology-categories]');
     if (!container) return;
 
-    const summary = document.querySelector('[data-technology-summary]');
-    if (summary) summary.textContent = `${technologies.length} tecnologias organizadas por categoria`;
-
     const fragment = document.createDocumentFragment();
     technologyCategories.forEach((category) => {
       const section = document.createElement('section');
@@ -531,6 +528,18 @@
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
     const initialCards = [...grid.querySelectorAll('[data-tech-card]')];
     const records = initialCards.map((element) => ({ template: element.cloneNode(true) }));
+    const fixedSlotNames = new Map([
+      [1, 'Java'],
+      [3, 'Spring Boot'],
+      [5, 'Angular']
+    ]);
+    const recordByName = new Map(records.map((record) => [record.template.querySelector('span')?.textContent, record]));
+    const fixedRecordsBySlot = new Map(
+      [...fixedSlotNames.entries()]
+        .map(([slot, name]) => [slot, recordByName.get(name)])
+        .filter(([, record]) => record)
+    );
+    const fixedRecords = new Set(fixedRecordsBySlot.values());
     let activeRecords = [];
     let activeCards = [];
     let queuedRecords = [];
@@ -554,18 +563,26 @@
 
     const cardFromRecord = (record) => cleanCard(record.template.cloneNode(true));
 
+    const buildVisibleRecords = (count) => {
+      const flexibleRecords = records.filter((record) => !fixedRecords.has(record));
+      const visibleRecords = [];
+      for (let index = 0; index < count; index += 1) {
+        const fixedRecord = fixedRecordsBySlot.get(index);
+        visibleRecords.push(fixedRecord || flexibleRecords.shift());
+      }
+      return visibleRecords.filter(Boolean);
+    };
+
+    const swappableIndexes = () => activeCards
+      .map((_, index) => index)
+      .filter((index) => !fixedRecordsBySlot.has(index));
+
     const syncSlotCount = () => {
       if (isAnimating) return;
       const count = visibleCount();
-      while (activeRecords.length < count && queuedRecords.length) {
-        const record = queuedRecords.shift();
-        activeRecords.push(record);
-        activeCards.push(cardFromRecord(record));
-      }
-      while (activeRecords.length > count) {
-        queuedRecords.unshift(activeRecords.pop());
-        activeCards.pop();
-      }
+      activeRecords = buildVisibleRecords(count);
+      activeCards = activeRecords.map(cardFromRecord);
+      queuedRecords = records.filter((record) => !fixedRecords.has(record) && !activeRecords.includes(record));
       grid.replaceChildren(...activeCards);
       activeCards.forEach((card) => card.setAttribute('aria-hidden', 'false'));
     };
@@ -599,7 +616,9 @@
 
     const replaceWithoutAnimation = () => {
       if (activeCards.length < 1 || queuedRecords.length < 1) return;
-      const targetIndex = Math.floor(Math.random() * activeCards.length);
+      const availableIndexes = swappableIndexes();
+      if (!availableIndexes.length) return;
+      const targetIndex = availableIndexes[Math.floor(Math.random() * availableIndexes.length)];
       const oldRecord = activeRecords[targetIndex];
       const incomingRecord = queuedRecords.shift();
       const incomingCard = cardFromRecord(incomingRecord);
@@ -622,7 +641,12 @@
         return;
       }
 
-      const targetIndex = Math.floor(Math.random() * activeCards.length);
+      const availableIndexes = swappableIndexes();
+      if (!availableIndexes.length) {
+        scheduleNext();
+        return;
+      }
+      const targetIndex = availableIndexes[Math.floor(Math.random() * availableIndexes.length)];
       const oldCard = activeCards[targetIndex];
       const oldRecord = activeRecords[targetIndex];
       const incomingRecord = queuedRecords.shift();
@@ -687,9 +711,9 @@
       }
     };
 
-    activeRecords = records.slice(0, visibleCount());
-    activeCards = initialCards.slice(0, activeRecords.length);
-    queuedRecords = records.slice(activeRecords.length);
+    activeRecords = buildVisibleRecords(visibleCount());
+    activeCards = activeRecords.map(cardFromRecord);
+    queuedRecords = records.filter((record) => !fixedRecords.has(record) && !activeRecords.includes(record));
     grid.replaceChildren(...activeCards);
     activeCards.forEach((card) => card.setAttribute('aria-hidden', 'false'));
     window.addEventListener('resize', syncSlotCount, { passive: true });
